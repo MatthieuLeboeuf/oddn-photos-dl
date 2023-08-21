@@ -23,6 +23,7 @@ import config from '../config.js';
             await fs.writeFileSync(`./data/${id} - ${title}/message.txt`, content);
             console.log(`Download photos from : ${id} - ${title}`);
             for (let k = 0; k < pageData[j].files_count; k++) {
+                if (pageData[j].files[k].type === 3) continue;
                 const ext = pageData[j].files[k].path.split('.')[3].split('?')[0];
                 if (fs.existsSync(`./data/${id} - ${title}/${k+1}.${ext}`)) {
                     continue;
