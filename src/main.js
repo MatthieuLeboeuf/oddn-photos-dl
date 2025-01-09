@@ -4,8 +4,14 @@ import config from '../config.js';
 
 (async () => {
     axios.defaults.headers.get['Cookie'] = config.cookie;
+
     const list = await axios.get('https://www.ondonnedesnouvelles.com/spaces/list');
     const journal = list.data.spaces.find((e) => e.id === config.id);
+    if (!journal) {
+        console.log('Veuillez fournir un id de séjour valide !');
+        process.exit(0);
+    }
+
     const articles = await axios.get(journal.enter_link+'/list');
     const posts_count = journal.posts_count;
     const page_size = articles.data.page_size;
@@ -36,11 +42,9 @@ import config from '../config.js';
             console.log(`Download data from : ${id} - ${title}`);
 
             // get post details
-            const currentData = await axios.get(journal.enter_link+'/with-details/'+pageData[j].id);
+            const currentData = await axios.get(journal.enter_link+'/posts/with-details/'+pageData[j].id);
 
             for (let k = 0; k < currentData.data.files.length; k++) {
-                //if (currentData.files[k].type === 3) continue;
-
                 // Create if not exist folder with file type
                 const type = currentData.data.files[k].type;
                 const dir = `./data/${id} - ${title}/${type}`;
