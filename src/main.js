@@ -5,7 +5,7 @@ import config from '../config.js';
 (async () => {
     axios.defaults.headers.get['Cookie'] = config.cookie;
 
-    const list = await axios.get('https://www.ondonnedesnouvelles.com/spaces/list');
+    const list = await axios.get(config.base_url+'/spaces/list');
     const journal = list.data.spaces.find((e) => e.id === config.id);
     if (!journal) {
         console.log('Veuillez fournir un id de séjour valide !');
@@ -58,17 +58,25 @@ import config from '../config.js';
                     continue;
                 }
 
-                // Download the file
-                await axios({
-                    method: 'GET',
-                    url: currentData.data.files[k].src,
-                    responseType: 'stream'
-                }).then(async function (res) {
-                    await res.data.pipe(fs.createWriteStream(`./data/${id} - ${title}/${type}/${k+1}.${ext}`));
-                });
+                // If the src is youtube only create a txt with url
+                if (currentData.data.files[k].src.includes('youtube.com')) {
+                    const content = 'https:'+currentData.data.files[k].src;
+                    await fs.writeFileSync(`./data/${id} - ${title}/${type}/${k+1}.txt`, content);
+                } else {
+                    // Download the file
+                    await axios({
+                        method: 'GET',
+                        url: currentData.data.files[k].src,
+                        responseType: 'stream'
+                    }).then(async function (res) {
+                        await res.data.pipe(fs.createWriteStream(`./data/${id} - ${title}/${type}/${k+1}.${ext}`));
+                    }).catch(error => {
+                        console.log(error);
+                    });
+                }
 
                 // Download counter
-                console.log(`Download photo ${k+1}/${currentData.data.files.length}`);
+                console.log(`Download ${type} ${k+1}/${currentData.data.files.length} - ${k+1}.${ext}`);
             }
             id++;
         }
