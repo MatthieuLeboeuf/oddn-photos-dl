@@ -36,7 +36,7 @@ import config from '../config.js';
             }
 
             // Get and parse description
-            const content = pageData[j].content.replaceAll('<br />', '');
+            const content = pageData[j].content.replaceAll('<br />', '').replaceAll('<br>', '');
             await fs.writeFileSync(`./data/${id} - ${title}/message.txt`, content);
 
             console.log(`Download data from : ${id} - ${title}`);
