@@ -27,7 +27,7 @@ import config from '../config.js';
 
         for (let j = 0; j < pageData.length; j++) {
             // Get and parse title
-            const title = pageData[j].title.replaceAll('/', '-').replaceAll(':', '');
+            const title = pageData[j].title.replaceAll('/', '-').replaceAll(':', '').replaceAll('?', '');
 
             // Create post title
             const dir = `./data/${id} - ${title}`;
